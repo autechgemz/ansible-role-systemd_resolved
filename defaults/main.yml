@@ -1,0 +1,15 @@
+---
+
+systemd_resolved_debug: false
+
+systemd_resolved_package_ensure: 'present'
+
+systemd_resolved_service_ensure: 'started'
+
+systemd_resolved_service_enable: true
+
+systemd_resolved_config_options: {}
+
+systemd_resolved_dropin_config_options: {}
+
+systemd_resolved_stub_resolve_symlink: true

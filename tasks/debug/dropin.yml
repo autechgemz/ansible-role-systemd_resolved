@@ -1,0 +1,14 @@
+---
+
+- name: Debug variable print
+  when: systemd_resolved_debug is defined and systemd_resolved_debug
+  block:
+    - name: Debug systemd_resolved_dropin_before
+      ansible.builtin.debug:
+        var: systemd_resolved_dropin_before
+    - name: Debug systemd_resolved_dropin_after
+      ansible.builtin.debug:
+        var: systemd_resolved_dropin_after
+    - name: Debug systemd_resolved_dropin_remove
+      ansible.builtin.debug:
+        var: systemd_resolved_dropin_remove

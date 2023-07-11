@@ -1,0 +1,4 @@
+---
+
+systemd_resolved_package_name:
+  - systemd-resolved

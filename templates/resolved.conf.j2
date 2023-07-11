@@ -1,0 +1,22 @@
+# {{ ansible_managed }}
+
+[Resolve]
+{% if systemd_resolved_config_options is defined and systemd_resolved_config_options %}
+{%   for key, value in systemd_resolved_config_options.items() %}
+{%     if key == 'DNS' or key == 'FallbackDNS' or key == 'Domains' %}
+{%       if value is iterable %}
+{{ key }}={{ value | join(' ') }}
+{%       elif value | length > 1 %}
+{{ key }}={{ value }}
+{%       else %}
+{{ key }}=
+{%       endif %}
+{%     else %}
+{%       if value is string %}
+{{ key }}={{ value }}
+{%       else %}
+{{ key }}=
+{%       endif %}
+{%     endif %}
+{%   endfor %}
+{% endif %}

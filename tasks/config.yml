@@ -1,0 +1,48 @@
+---
+
+- name: Config tasks
+  tags:
+    - systemd_resolved_config
+    - systemd_resolved
+  become: true
+  block:
+    - name: Manage global configuration
+      ansible.builtin.template:
+        src: resolved.conf.j2
+        dest: "{{ systemd_resolved_config_file }}" 
+        mode: 0644
+        owner: root
+        group: root
+      notify: Restart systemd-resolved
+      when: systemd_resolved_config_options is defined and systemd_resolved_config_options
+
+    - name: Check resolve link stat
+      ansible.builtin.stat:
+        path: /etc/resolv.conf
+      register: resolv_link
+
+    - name: Debug link state
+      when: systemd_resolved_debug
+      ansible.builtin.debug: var=resolv_link
+
+    - name: Manage link path to stub-resolv.conf
+      when:
+        - systemd_resolved_stub_resolve_symlink is defined and systemd_resolved_stub_resolve_symlink
+        - (resolv_link.stat.lnk_source is undefined) or 
+          (resolv_link.stat.lnk_source not in '/run/systemd/resolved/stub-resolv.conf')
+      ansible.builtin.file:
+        src: '../run/systemd/resolve/stub-resolv.conf'
+        dest: /etc/resolv.conf
+        force: true
+        state: link
+
+    - name: Manage link path to resolv.conf
+      when:
+        - systemd_resolved_stub_resolve_symlink is defined and not systemd_resolved_stub_resolve_symlink
+        - (resolv_link.stat.lnk_source is undefined) or 
+          (resolv_link.stat.lnk_source not in '/run/systemd/resolved/resolv.conf')
+      ansible.builtin.file:
+        src: '../run/systemd/resolve/resolv.conf'
+        dest: /etc/resolv.conf
+        force: true
+        state: link

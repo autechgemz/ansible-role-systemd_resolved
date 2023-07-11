@@ -1,0 +1,7 @@
+---
+
+systemd_resolved_service_name: 'systemd-resolved'
+
+systemd_resolved_config_file: '/etc/systemd/resolved.conf'
+
+systemd_resolved_dropin_config_dir: '/etc/systemd/resolved.conf.d'

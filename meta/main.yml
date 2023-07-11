@@ -1,0 +1,9 @@
+galaxy_info:
+  role_name: systemd_resolved
+  namespace: autechgemz
+  author: "autechgemz@gmail.com"
+  description: "Manage Systemd Network Name Resolution daemon configuration"
+  license: MIT
+  min_ansible_version: "1.2"
+  galaxy_tags: []
+dependencies: []

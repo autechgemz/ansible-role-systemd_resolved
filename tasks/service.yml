@@ -1,0 +1,14 @@
+---
+
+- name: Service tasks
+  tags:
+    - systemd_resolved_service
+    - systemd_resolved
+  become: true
+  block:
+    - name: Manage systemd_resolved service
+      ansible.builtin.service:
+        name: "{{ systemd_resolved_service_name }}"
+        state: "{{ systemd_resolved_service_ensure }}"
+        enabled: "{{ systemd_resolved_service_enable }}"
+      when: not ansible_check_mode
