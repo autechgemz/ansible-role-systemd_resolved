@@ -52,12 +52,6 @@ systemd_resolved_service_enable: true
 systemd_resolved_config_options: {}
 ```
 
-### systemd_resolved_dropin_config_purge: (bool)
-
-```
-systemd_resolved_dropin_config_purge: false
-```
-
 ### systemd_resolved_dropin_config_options: (dict)
 
 ```
