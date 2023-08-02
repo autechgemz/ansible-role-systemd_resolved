@@ -9,10 +9,10 @@
     - name: Manage global configuration
       ansible.builtin.template:
         src: resolved.conf.j2
-        dest: "{{ systemd_resolved_config_file }}" 
-        mode: 0644
+        dest: "{{ systemd_resolved_config_file }}"
         owner: root
         group: root
+        mode: "0644"
       notify: Restart systemd-resolved
       when: systemd_resolved_config_options is defined and systemd_resolved_config_options
 
@@ -23,12 +23,14 @@
 
     - name: Debug link state
       when: systemd_resolved_debug
-      ansible.builtin.debug: var=resolv_link
+      ansible.builtin.debug:
+        var: resolv_link
 
     - name: Manage link path to stub-resolv.conf
       when:
-        - systemd_resolved_stub_resolve_symlink is defined and systemd_resolved_stub_resolve_symlink
-        - (resolv_link.stat.lnk_source is undefined) or 
+        - systemd_resolved_stub_resolve_symlink is defined
+          and systemd_resolved_stub_resolve_symlink
+        - (resolv_link.stat.lnk_source is undefined) or
           (resolv_link.stat.lnk_source not in '/run/systemd/resolved/stub-resolv.conf')
       ansible.builtin.file:
         src: '../run/systemd/resolve/stub-resolv.conf'
@@ -39,7 +41,7 @@
     - name: Manage link path to resolv.conf
       when:
         - systemd_resolved_stub_resolve_symlink is defined and not systemd_resolved_stub_resolve_symlink
-        - (resolv_link.stat.lnk_source is undefined) or 
+        - (resolv_link.stat.lnk_source is undefined) or
           (resolv_link.stat.lnk_source not in '/run/systemd/resolved/resolv.conf')
       ansible.builtin.file:
         src: '../run/systemd/resolve/resolv.conf'

@@ -1,6 +1,7 @@
 ---
-- name: Restart systemd-resolved 
+- name: Restart systemd-resolved
+  when: not ansible_check_mode
+  become: true
   ansible.builtin.systemd:
     name: "{{ systemd_resolved_service_name }}"
     state: restarted
-  when: not ansible_check_mode

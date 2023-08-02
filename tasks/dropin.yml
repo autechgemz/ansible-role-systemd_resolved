@@ -9,9 +9,9 @@
     - name: Make dropin config directory
       ansible.builtin.file:
         path: "{{ systemd_resolved_dropin_config_dir }}"
-        mode: 0755
         owner: root
         group: root
+        mode: "0755"
         state: directory
       when: systemd_resolved_dropin_config_options is defined and systemd_resolved_dropin_config_options
 
@@ -51,15 +51,15 @@
             path: "{{ item }}"
             state: absent
           with_items: "{{ systemd_resolved_dropin_remove }}"
-          notify: Restart systemd-resolved 
+          notify: Restart systemd-resolved
 
     - name: Manage dropin configuration
       when: systemd_resolved_dropin_config_options is defined and systemd_resolved_dropin_config_options
       ansible.builtin.template:
         src: resolved.dropin.j2
         dest: "{{ systemd_resolved_dropin_config_dir }}/{{ item.name }}"
-        mode: 0644
         owner: root
         group: root
+        mode: "0644"
       notify: Restart systemd-resolved
       with_items: "{{ systemd_resolved_dropin_config_options }}"
