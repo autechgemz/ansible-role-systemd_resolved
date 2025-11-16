@@ -10,7 +10,7 @@ Manage systemd-resolved - Network Name Resolution daemon configuration.
 
 ## Dependencies
 
-- EPEL repository (RedHat family only)
+None
 
 ## OS Platforms
 
