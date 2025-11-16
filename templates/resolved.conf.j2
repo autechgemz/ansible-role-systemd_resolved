@@ -12,8 +12,10 @@
 {{ key }}=
 {%       endif %}
 {%     else %}
-{%       if value is string %}
-{{ key }}={{ value }}
+{%       if value is boolean %}
+{{ key }}={{ (value | string | lower in ['true', 'yes']) | ternary('yes', 'no') }}
+{%       elif value is string or value is number %}
+{{ key }}={{ value | string }}
 {%       else %}
 {{ key }}=
 {%       endif %}

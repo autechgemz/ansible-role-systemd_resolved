@@ -7,6 +7,7 @@
   become: true
   block:
     - name: Manage global configuration
+      when: systemd_resolved_config_options is defined and systemd_resolved_config_options | length > 0
       ansible.builtin.template:
         src: resolved.conf.j2
         dest: "{{ systemd_resolved_config_file }}"
@@ -14,7 +15,6 @@
         group: root
         mode: "0644"
       notify: Restart systemd-resolved
-      when: systemd_resolved_config_options is defined and systemd_resolved_config_options
 
     - name: Check resolve link stat
       ansible.builtin.stat:

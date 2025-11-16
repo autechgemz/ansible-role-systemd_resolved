@@ -13,10 +13,10 @@
         group: root
         mode: "0755"
         state: directory
-      when: systemd_resolved_dropin_config_options is defined and systemd_resolved_dropin_config_options
+      when: systemd_resolved_dropin_config_options is defined and systemd_resolved_dropin_config_options | length > 0
 
     - name: Initialize dropin config
-      when: systemd_resolved_dropin_config_options is defined and systemd_resolved_dropin_config_options
+      when: systemd_resolved_dropin_config_options is defined and systemd_resolved_dropin_config_options | length > 0
       block:
         - name: Search dropin config
           ansible.builtin.find:
@@ -26,16 +26,15 @@
 
         - name: Current dropin config
           ansible.builtin.set_fact:
-            systemd_resolved_dropin_before: "{{ findlist['files'] | map(attribute='path') | flatten }}"
+            systemd_resolved_dropin_before: "{{ findlist.files | map(attribute='path') | list }}"
 
-        - name: Generate dropin config
+        - name: Generate dropin name list
           ansible.builtin.set_fact:
-            systemd_resolved_dropin_temp: "{{ systemd_resolved_dropin_config_options | map(attribute='name') | flatten }}"
+            systemd_resolved_dropin_temp: "{{ systemd_resolved_dropin_config_options | map(attribute='name') | list }}"
 
-        - name: Generate dropin config
+        - name: Generate dropin_after list
           ansible.builtin.set_fact:
-            systemd_resolved_dropin_after: "{{ systemd_resolved_dropin_after | default([]) }} + [ {{ systemd_resolved_dropin_config_dir }}/{{ item }} ] | flatten }}"
-          with_items: "{{ systemd_resolved_dropin_temp }}"
+            systemd_resolved_dropin_after: "{{ systemd_resolved_dropin_temp | map('regex_replace', '^(.*)$', systemd_resolved_dropin_config_dir ~ '/\\1') | list }}"
 
         - name: Remove target dropin config
           ansible.builtin.set_fact:
@@ -43,10 +42,10 @@
 
         - name: Debug variable print
           when: systemd_resolved_debug is defined and systemd_resolved_debug
-          ansible.builtin.import_tasks: debug/dropin.yml
+          ansible.builtin.include_tasks: debug/dropin.yml
 
         - name: Remove dropin config
-          when: systemd_resolved_dropin_remove is defined
+          when: systemd_resolved_dropin_config_purge | default(false) and systemd_resolved_dropin_remove is defined and systemd_resolved_dropin_remove | length > 0
           ansible.builtin.file:
             path: "{{ item }}"
             state: absent
@@ -54,7 +53,7 @@
           notify: Restart systemd-resolved
 
     - name: Manage dropin configuration
-      when: systemd_resolved_dropin_config_options is defined and systemd_resolved_dropin_config_options
+      when: systemd_resolved_dropin_config_options is defined and systemd_resolved_dropin_config_options | length > 0
       ansible.builtin.template:
         src: resolved.dropin.j2
         dest: "{{ systemd_resolved_dropin_config_dir }}/{{ item.name }}"
@@ -63,3 +62,4 @@
         mode: "0644"
       notify: Restart systemd-resolved
       with_items: "{{ systemd_resolved_dropin_config_options }}"
+      register: dropin_result
